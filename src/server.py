@@ -6,8 +6,8 @@ logger = logging.getLogger(__name__)
 
 
 class QueuedProtocol(asyncio.DatagramProtocol):
-    def __init__(self):
-        self.queue = asyncio.Queue(maxsize=4096)
+    def __init__(self, queue):
+        self.queue = queue
 
     def datagram_received(self, data, addr):
         try:
@@ -15,17 +15,13 @@ class QueuedProtocol(asyncio.DatagramProtocol):
         except asyncio.QueueFull:
             logger.error("unable to handle incoming data, queue oveflow")
 
-    async def rcv_data(self):
-        while True:
-            yield await self.queue.get()
-            self.queue.task_done()
-
 
 class Server:
     def __init__(self, host, port, callback):
         self.callback = callback
         self.host = host
         self.port = port
+        self.queue = asyncio.Queue(maxsize=4096)
 
     def run(self):
         logger.info("Starting server")
@@ -35,12 +31,15 @@ class Server:
         loop = asyncio.get_running_loop()
 
         transport, protocol = await loop.create_datagram_endpoint(
-            QueuedProtocol, local_addr=(self.host, self.port)
+            lambda: QueuedProtocol(self.queue),
+            local_addr=(self.host, self.port),
         )
 
         try:
-            async for data in protocol.rcv_data():
+            while True:
+                data = await self.queue.get()
                 logger.debug(f"received data: {data}")
                 loop.create_task(self.callback(data))
+                self.queue.task_done()
         finally:
             transport.close()
