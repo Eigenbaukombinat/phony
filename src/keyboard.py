@@ -16,7 +16,7 @@ class PhoneBoard:
         try:
             keycode = self.mapper.keycode_from_number(number)
         except KeyError:
-            logger.warning(f'unable to map number: {number}')
+            logger.warning(f"unable to map number: {number}")
             return
 
         await self.keyboard.keystroke(keycode)

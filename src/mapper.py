@@ -2,7 +2,8 @@ from evdev import ecodes
 
 
 class Mapper:
-    # taken from https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h
+    # taken from
+    # https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h
     mapping = {
         "0": ecodes.KEY_T,
         "2": ecodes.KEY_UP,

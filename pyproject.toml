@@ -13,3 +13,7 @@ dependencies = [
 
 [project.scripts]
 phony = "cli:phony"
+test_client = "cli:test_client"
+
+[tool.black]
+line-length = 80
