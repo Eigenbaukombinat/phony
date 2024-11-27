@@ -1,5 +1,7 @@
 import click
 import logging
+import os
+import pwd
 
 from evdev import UInput
 
@@ -22,4 +24,5 @@ def phony(host, port):
         phoneboard = PhoneBoard(ui, mapper)
         server = Server(host, port, phoneboard.keystroke)
 
+        os.setuid(pwd.getpwnam('nobody')[2])
         server.run()
