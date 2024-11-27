@@ -33,13 +33,14 @@ def phony(host, port):
 @click.command()
 @click.option("-h", "--host", default="localhost", help="Host or IP to bind")
 @click.option("-p", "--port", default=1234, help="Port to bind")
-def test_client(host, port):
+@click.option("-k", "--key", default="+", help="Key to send")
+def test_client(host, port, key):
     logging.basicConfig(level=logging.DEBUG)
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
 
     for i in itertools.count(start=1):
-        sock.sendto(b"0", (host, port))
+        sock.sendto(key.encode("ascii"), (host, port))
 
         if i % 1000 == 0:
             logger.info(f"{i} messages senf")
