@@ -43,4 +43,4 @@ def test_client(host, port, key):
         sock.sendto(key.encode("ascii"), (host, port))
 
         if i % 1000 == 0:
-            logger.info(f"{i} messages senf")
+            logger.info(f"{i} messages send")
